@@ -30,10 +30,10 @@ export async function PUT(req, { params }) {
       where: { id: Number(params.taskId) },
       data: {
         description,
-        subject,
-        priority,
-        deadline: new Date(deadline),
-        isCompleted,
+        // subject,
+        // priority,
+        // deadline: new Date(deadline),
+        // isCompleted,
       },
     });
 

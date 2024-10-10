@@ -1,0 +1,76 @@
+
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// prisma/schema.prisma
+
+model User {
+  id          Int          @id @default(autoincrement())
+  email       String       @unique
+  password    String
+  name        String
+  tasks       Task[]
+  timetables  Timetable[]
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model Task {
+  id          Int         @id @default(autoincrement())
+  description String
+  subject     String
+  priority    Priority
+  deadline    DateTime
+  isCompleted Boolean     @default(false)
+  userId      Int
+  user        User        @relation(fields: [userId], references: [id])
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+model Timetable {
+  id                  Int          @id @default(autoincrement())
+  userId              Int
+  user                User         @relation(fields: [userId], references: [id])
+  studySessions       StudySession[]
+  preferredStartTime  DateTime     // User's preferred daily start time for studying
+  freeHoursDaily      Float        // Number of hours free for study each day
+  createdAt           DateTime     @default(now())
+  updatedAt           DateTime     @updatedAt
+}
+
+model StudySession {
+  id          Int      @id @default(autoincrement())
+  subject     String
+  requiredHours Float   // Number of hours required to study the subject
+  startTime   DateTime
+  endTime     DateTime
+  timetableId Int
+  timetable   Timetable @relation(fields: [timetableId], references: [id])
+}
+
+// model Progress {
+//   id            Int      @id @default(autoincrement())
+//   userId        Int
+//   user          User     @relation(fields: [userId], references: [id])
+//   completedTasks Int     @default(0)
+//   totalTasks    Int      @default(0)
+//   percentage    Float    @default(0.0)  // Progress percentage based on tasks
+//   createdAt     DateTime @default(now())
+//   updatedAt     DateTime @updatedAt
+// }
+
+// Enums for task priority
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+}
